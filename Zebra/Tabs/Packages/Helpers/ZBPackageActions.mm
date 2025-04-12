@@ -8,20 +8,17 @@
 
 #import "ZBPackageActions.h"
 
-#import <ZBDevice.h>
-#import <ZBSettings.h>
-#import <ZBAppDelegate.h>
-#import <Headers/UIAlertController+Private.h>
-#import <UI/Packages/Views/Cells/ZBPackageTableViewCell.h>
-#import <UI/Packages/ZBPackageViewController.h>
-#import <Extensions/ZBColor.h>
-#import <UI/Packages/ZBPackageListViewController.h>
-#import <Extensions/UIAlertController+Zebra.h>
-#import <JSONParsing/ZBPurchaseInfo.h>
-#import <UI/ZBTabBarController.h>
+#import "Zebra-Swift.h"
+#import "ZBAppDelegate.h"
+#import "UIAlertController+Private.h"
+#import "ZBPackageTableViewCell.h"
+#import "ZBPackageViewController.h"
+#import "ZBPackageListViewController.h"
+#import "ZBPurchaseInfo.h"
+#import "ZBTabBarController.h"
 
-#import <Model/PLPackage+Zebra.h>
-#import <Plains/Queue/PLQueue.h>
+#import "PLPackage+Zebra.h"
+#import <Plains/Plains.h>
 
 @implementation ZBPackageActions
 
@@ -30,11 +27,11 @@
 + (void)performExtraAction:(ZBPackageExtraActionType)action forPackage:(PLPackage *)package completion:(void (^)(ZBPackageExtraActionType action))completion {
     switch (action) {
         case ZBPackageExtraActionShowUpdates:
-            package.held = NO;
+            package.isHeld = NO;
             if (completion) completion(action);
             break;
         case ZBPackageExtraActionHideUpdates:
-            package.held = YES;
+            package.isHeld = YES;
             if (completion) completion(action);
             break;
 //        case ZBPackageExtraActionAddFavorite:

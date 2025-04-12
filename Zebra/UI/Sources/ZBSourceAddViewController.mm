@@ -7,23 +7,21 @@
 //
 
 #import "ZBSourceAddViewController.h"
+#import <WebKit/WebKit.h>
 
-#import <UI/Sources/ZBSourceImportViewController.h>
-#import <UI/Sources/ZBSourceBulkAddViewController.h>
-#import <UI/Sources/Views/Cells/ZBSourceTableViewCell.h>
+#import "ZBSourceImportViewController.h"
+#import "ZBSourceBulkAddViewController.h"
 
-#import <Model/ZBDummySource.h>
+#import "ZBDummySource.h"
 
-#import <Extensions/ZBColor.h>
-#import <ZBDevice.h>
+#import "Zebra-Swift.h"
 
 #import <Plains/Plains.h>
-#import <SDWebImage/SDWebImage.h>
 
 @interface ZBSourceAddViewController () {
     UISearchController *searchController;
     NSMutableSet <NSString *> *addedSourcesUUIDs;
-    NSMutableArray <ZBDummySource *> *sources;
+    NSArray <ZBDummySource *> *sources;
     NSMutableArray <ZBDummySource *> *selectedSources;
     NSArray <ZBDummySource *> *filteredSources;
     BOOL clipboardHasSource;
@@ -94,39 +92,21 @@
     }
     if (!managers) managers = [self loadManagers];
 
-#if TARGET_OS_MACCATALYST
-    NSURL *url = [NSURL URLWithString:@"https://styres.me/zeebs/mac_repo.json"];
-#else
-    NSURL *url = [NSURL URLWithString:@"https://api.parcility.co/db/repos/small"];
-#endif
-    NSURLSessionDataTask *dataTask = [[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        if (data && !error) {
-            NSError *JSONError;
-            NSDictionary *fullJSON = [NSJSONSerialization JSONObjectWithData:data options:0 error:&JSONError];
-            if ([fullJSON[@"status"] boolValue] == YES && [fullJSON[@"code"] integerValue] == 200) {
-                NSArray *repos = fullJSON[@"data"];
-                for (NSDictionary *repo in repos) {
-                    NSURL *URL = [NSURL URLWithString:repo[@"url"]];
-                    if (URL) {
-                        ZBDummySource *source = [[ZBDummySource alloc] initWithURL:URL];
-                        [source setOrigin:repo[@"name"]];
-                        [source setVerificationStatus:ZBSourceExists];
-                        
-                        [self->sources addObject:source];
-                    }
-                }
+    #if TARGET_OS_MACCATALYST
+    return;
+    #endif
 
-                NSSortDescriptor *nameSort = [[NSSortDescriptor alloc] initWithKey:@"origin" ascending:YES];
-                [self->sources sortUsingDescriptors:@[nameSort]];
-
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self.tableView reloadData];
-                });
-            }
-        }
+    __weak ZBSourceAddViewController *weakSelf = self;
+    [[ZBCanister shared] fetchRepos:^{
+        if (!weakSelf)
+            return;
+        ZBSourceAddViewController *strong = weakSelf;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            strong->sources = [[ZBCanister shared] repos];
+            [self.tableView reloadData];
+        });
+        
     }];
-
-    [dataTask resume];
 }
 
 - (NSArray *)loadManagers {
@@ -161,9 +141,9 @@
     addButton.enabled = NO;
     self.navigationItem.rightBarButtonItem = addButton;
     
-    [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([ZBSourceTableViewCell class]) bundle:nil] forCellReuseIdentifier:@"SourceTableViewCell"];
+    [self.tableView registerClass:[ZBSourceTableViewCell class] forCellReuseIdentifier:@"SourceTableViewCell"];
     
-    self.tableView.backgroundColor = [ZBColor systemBackgroundColor];
+    self.tableView.backgroundColor = [UIColor systemBackgroundColor];
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
     [self checkPasteboard:NO];
@@ -238,7 +218,7 @@
 - (void)addSelectedSources {
     PLSourceManager *sourceManager = [PLSourceManager sharedInstance];
     for (ZBDummySource *source in selectedSources) {
-        [sourceManager addSourceWithArchiveType:source.archiveType repositoryURI:source.repositoryURI distribution:source.distribution components:source.components];
+        [sourceManager addSourceWithURL:source.repositoryURI archiveType:source.archiveType suites:source.distribution components:source.components error:nil];
     }
     
     [self dismiss];
@@ -294,7 +274,7 @@
             cell.sourceLabel.hidden = NO;
             cell.sourceLabel.text = clipboardSource.origin;
             cell.urlLabel.text = NSLocalizedString(@"From your clipboard", @"");
-            [cell.iconImageView sd_setImageWithURL:clipboardSource.iconURL placeholderImage:[UIImage imageNamed:@"Unknown"]];
+//            [cell.iconImageView sd_setImageWithURL:clipboardSource.iconURL placeholderImage:[UIImage imageNamed:@"Unknown"]];
         }
     } else if (indexPath.section == 1 && searchTermIsEmpty) {
         if (indexPath.row == 0) {
@@ -307,7 +287,7 @@
             } else {
                 // FIXME: Fallback on earlier versions
             }
-            cell.accessoryView.tintColor = [ZBColor tertiaryLabelColor];
+            cell.accessoryView.tintColor = [UIColor tertiaryLabelColor];
             
             return cell;
         } else if (importExpanded) {
@@ -316,7 +296,7 @@
             cell.sourceLabel.hidden = NO;
             cell.sourceLabel.text = manager[@"name"];
             cell.urlLabel.text = manager[@"label"];
-            [cell.iconImageView sd_setImageWithURL:[NSURL URLWithString:manager[@"icon"]] placeholderImage:[UIImage imageNamed:@"Unknown"]];
+//            [cell.iconImageView sd_setImageWithURL:[NSURL URLWithString:manager[@"icon"]] placeholderImage:[UIImage imageNamed:@"Unknown"]];
         }
     } else if (indexPath.section == 2 && searchTermIsURL) {
         if (enteredSource) {
@@ -342,7 +322,7 @@
                 cell.sourceLabel.hidden = NO;
                 cell.sourceLabel.text = enteredSource.origin;
                 cell.urlLabel.text = enteredSource.repositoryURI;
-                [cell.iconImageView sd_setImageWithURL:enteredSource.iconURL placeholderImage:[UIImage imageNamed:@"Unknown"]];
+//                [cell.iconImageView sd_setImageWithURL:enteredSource.iconURL placeholderImage:[UIImage imageNamed:@"Unknown"]];
             }
         }
     } else if (indexPath.section == 3) {
@@ -362,7 +342,7 @@
         cell.sourceLabel.text = source.origin;
         cell.urlLabel.text = source.repositoryURI;
         
-        [cell.iconImageView sd_setImageWithURL:source.iconURL placeholderImage:[UIImage imageNamed:@"Unknown"]];
+//        [cell.iconImageView sd_setImageWithURL:source.iconURL placeholderImage:[UIImage imageNamed:@"Unknown"]];
     }
     
     return cell;
@@ -384,7 +364,7 @@
             importExpanded = !importExpanded;
 
             NSMutableArray *indexPaths = [NSMutableArray new];
-            for (int i = 0; i < managers.count; i++) {
+            for (NSUInteger i = 0; i < managers.count; i++) {
                 [indexPaths addObject:[NSIndexPath indexPathForRow:i + 1 inSection:1]];
             }
 

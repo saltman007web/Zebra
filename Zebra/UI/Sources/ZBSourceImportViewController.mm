@@ -9,16 +9,14 @@
 #import "ZBSourceImportViewController.h"
 #import "ZBAppDelegate.h"
 
-#import <Model/ZBDummySource.h>
+#import "ZBDummySource.h"
 
-#import <Extensions/UINavigationBar+Extensions.h>
-#import <Extensions/UIViewController+Extensions.h>
-#import <UI/Sources/Views/Cells/ZBSourceTableViewCell.h>
-#import <Extensions/ZBColor.h>
+#import "UINavigationBar+Extensions.h"
+#import "UIViewController+Extensions.h"
+#import <WebKit/WebKit.h>
 
-#import <Plains/Model/PLSource.h>
-#import <Plains/Managers/PLSourceManager.h>
-#import <SDWebImage/SDWebImage.h>
+#import <Plains/Plains.h>
+#import "Zebra-Swift.h"
 
 @interface ZBSourceImportViewController () {
     double individualIncrement;
@@ -108,7 +106,7 @@
     importItem.enabled = NO;
     self.navigationItem.rightBarButtonItem = importItem;
     
-    [self.tableView registerNib:[UINib nibWithNibName:@"ZBSourceTableViewCell" bundle:nil] forCellReuseIdentifier:@"sourceTableViewCell"];
+    [self.tableView registerClass:[ZBSourceTableViewCell class] forCellReuseIdentifier:@"sourceTableViewCell"];
 }
 
 - (void)viewDidLoad {
@@ -192,7 +190,7 @@
 
         cell.sourceLabel.alpha = 1.0;
         cell.urlLabel.alpha = 1.0;
-        cell.sourceLabel.textColor = [ZBColor labelColor];
+        cell.sourceLabel.textColor = [UIColor labelColor];
         [cell setSpinning:NO];
         switch (status) {
             case ZBSourceExists: {
@@ -226,7 +224,7 @@
         cell.sourceLabel.text = self.titles[source.UUID];
         cell.urlLabel.text = source.repositoryURI;
 
-        [cell.iconImageView sd_setImageWithURL:source.iconURL placeholderImage:[UIImage imageNamed:@"Unknown"]];
+//        [cell.iconImageView sd_setImageWithURL:source.iconURL placeholderImage:[UIImage imageNamed:@"Unknown"]];
         
         return cell;
     }
@@ -236,7 +234,7 @@
         cell.textLabel.text = NSLocalizedString(@"No sources to import", @"");
         cell.backgroundColor = [UIColor clearColor];
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
-        cell.textLabel.textColor = [ZBColor secondaryLabelColor];
+        cell.textLabel.textColor = [UIColor secondaryLabelColor];
         tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
@@ -345,7 +343,7 @@
             if (dummySource.components) [sourceDict setObject:dummySource.components forKey:@"Components"];
             [sourceDicts addObject:sourceDict];
         }
-        [self->sourceManager addSources:sourceDicts];
+//        [self->sourceManager addSources:sourceDicts];
         
         [self dismissViewControllerAnimated:YES completion:nil];
     }];

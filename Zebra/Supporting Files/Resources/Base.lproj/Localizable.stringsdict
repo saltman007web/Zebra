@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Zebra encountered %@ errors.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@VARIABLE@</string>
+		<key>VARIABLE</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>li</string>
+			<key>one</key>
+			<string>Zebra encountered an error.</string>
+			<key>other</key>
+			<string>Zebra encountered %2$@ errors.</string>
+		</dict>
+	</dict>
+	<key>%@ Errors</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@VARIABLE@</string>
+		<key>VARIABLE</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>li</string>
+			<key>zero</key>
+			<string>No Errors</string>
+			<key>one</key>
+			<string>%2$@ Error</string>
+			<key>other</key>
+			<string>%2$@ Errors</string>
+		</dict>
+	</dict>
+	<key>%@ Sources</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@VARIABLE@</string>
+		<key>VARIABLE</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>li</string>
+			<key>zero</key>
+			<string>No Sources</string>
+			<key>one</key>
+			<string>%2$@ Source</string>
+			<key>other</key>
+			<string>%2$@ Sources</string>
+		</dict>
+	</dict>
+	<key>%@ Packages</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@VARIABLE@</string>
+		<key>VARIABLE</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>li</string>
+			<key>zero</key>
+			<string>No Packages</string>
+			<key>one</key>
+			<string>%2$@ Package</string>
+			<key>other</key>
+			<string>%2$@ Packages</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

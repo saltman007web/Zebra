@@ -8,20 +8,16 @@
 
 #import "ZBSidebarController.h"
 
-#import <UI/Home/ZBHomeViewController.h>
-#import <UI/Sources/ZBSourceListViewController.h>
-#import <UI/Packages/ZBPackageListViewController.h>
-#import <UI/Search/ZBSearchViewController.h>
-#import <UI/Queue/ZBQueueViewController.h>
-#import <UI/Settings/ZBSettingsViewController.h>
+#import "ZBHomeViewController.h"
+#import "ZBSourceListViewController.h"
+#import "ZBPackageListViewController.h"
+#import "ZBSearchViewController.h"
+#import "ZBQueueViewController.h"
+#import "ZBSettingsViewController.h"
 
-#import <ZBSettings.h>
-#import <Extensions/ZBColor.h>
+#import "Zebra-Swift.h"
 
-#import <Plains/Queue/PLQueue.h>
-#import <Plains/Managers/PLPackageManager.h>
-#import <Plains/Managers/PLSourceManager.h>
-#import <Plains/Model/PLPackage.h>
+#import <Plains/Plains.h>
 
 @interface ZBSidebarController () {
     NSArray *titles;
@@ -106,8 +102,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateQueue:) name:PLQueueUpdateNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateUpdates:) name:PLDatabaseRefreshNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateUpdates:) name:PLDatabaseImportNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showRefreshIndicator) name:PLStartedSourceRefreshNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideRefreshIndicator) name:PLFinishedSourceRefreshNotification object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showRefreshIndicator) name:PLStartedSourceRefreshNotification object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideRefreshIndicator) name:PLFinishedSourceRefreshNotification object:nil];
     }
     
     return self;
@@ -200,7 +196,7 @@
     cell.textLabel.text = tabItem.title;
     cell.imageView.image = tabItem.image;
     cell.selectionStyle = UITableViewCellSelectionStyleGray;
-    cell.tintColor = [ZBColor accentColor];
+    cell.tintColor = [UIColor accentColor];
         
     if (indexPath.row == 1) {
         
@@ -555,7 +551,7 @@
     }
     
     if (userRequested || needsUpdate) {
-        [[PLSourceManager sharedInstance] refreshSources];
+//        [[PLSourceManager sharedInstance] refreshSources];
     }
 }
 

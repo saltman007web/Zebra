@@ -8,9 +8,7 @@
 
 #import "ZBCreditsViewController.h"
 
-#import <Extensions/ZBColor.h>
-#import <ZBDevice.h>
-#import <ZBSettings.h>
+#import "Zebra-Swift.h"
 
 @implementation ZBCreditsViewController
 
@@ -47,7 +45,7 @@
 - (void)fetchCredits {
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     [request setHTTPMethod:@"GET"];
-    [request setURL:[NSURL URLWithString:@"https://getzbra.com/api/credits.json"]];
+    [request setURL:[NSURL URLWithString:@"https://api.getzbra.com/credits.json"]];
 
     NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (data && !error) {
@@ -72,7 +70,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [self.credits[section][@"items"] count];
+    return [(NSArray *)self.credits[section][@"items"] count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -83,18 +81,18 @@
     if (indexPath.section == 3) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"libraryCreditTableViewCell"];
         [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
-        [cell.textLabel setTextColor:[ZBColor labelColor]];
+        [cell.textLabel setTextColor:[UIColor labelColor]];
     }
     else {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"personCreditTableViewCell"];
         if (item[@"link"]) {
-            [cell.textLabel setTextColor:[ZBColor accentColor] ?: [UIColor systemBlueColor]];
+            [cell.textLabel setTextColor:[UIColor accentColor] ?: [UIColor systemBlueColor]];
         }
         else {
-            [cell.textLabel setTextColor:[ZBColor labelColor]];
+            [cell.textLabel setTextColor:[UIColor labelColor]];
         }
     }
-    cell.detailTextLabel.textColor = [ZBColor secondaryLabelColor];
+    cell.detailTextLabel.textColor = [UIColor secondaryLabelColor];
     
     cell.textLabel.text = item[@"name"];
     cell.detailTextLabel.text = item[@"subtitle"];
@@ -113,7 +111,7 @@
     NSURL *url = [NSURL URLWithString:person[@"link"]];
     
     if (url) {
-        [ZBDevice openURL:url sender:self];
+        [ZBURLController openURL:url sender:self];
     }
 }
 

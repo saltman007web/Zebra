@@ -7,9 +7,8 @@
 //
 
 #import "ZBPackageSupportViewController.h"
-#import <ZBDevice.h>
-#import <Extensions/ZBColor.h>
-#import <Plains/Model/PLPackage.h>
+#import "Zebra-Swift.h"
+#import <Plains/Plains.h>
 
 @interface ZBPackageSupportViewController ()
 @property (nonatomic, strong) PLPackage *package;
@@ -30,7 +29,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [ZBColor systemBackgroundColor];
+    self.view.backgroundColor = [UIColor systemBackgroundColor];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -39,16 +38,16 @@
     // This is a temporary support view, will be replaced with a redesigned view in a later beta
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Support" message:nil preferredStyle:UIAlertControllerStyleAlert];
     
-    if (self.package.authorEmail) {
-        UIAlertAction *authorAction = [UIAlertAction actionWithTitle:[NSString stringWithFormat:@"%@ (Author)", self.package.authorName] style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [self sendEmailTo:self.package.authorEmail];
+    if (self.package.author.email) {
+        UIAlertAction *authorAction = [UIAlertAction actionWithTitle:[NSString stringWithFormat:@"%@ (Author)", self.package.author.name] style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [self sendEmailTo:self.package.author.email];
         }];
         [alert addAction:authorAction];
     }
     
-    if (self.package.maintainerEmail) {
-        UIAlertAction *authorAction = [UIAlertAction actionWithTitle:[NSString stringWithFormat:@"%@ (Maintainer)", self.package.maintainerName] style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [self sendEmailTo:self.package.maintainerEmail];
+    if (self.package.maintainer.email) {
+        UIAlertAction *authorAction = [UIAlertAction actionWithTitle:[NSString stringWithFormat:@"%@ (Maintainer)", self.package.maintainer.name] style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [self sendEmailTo:self.package.maintainer.email];
         }];
         [alert addAction:authorAction];
     }
@@ -63,7 +62,7 @@
 
 - (void)sendEmailTo:(NSString *)address {
     NSString *subject = [NSString stringWithFormat:@"Zebra/APT(A): %@ (%@)", self.package.name, self.package.version];
-    NSString *body = [NSString stringWithFormat:@"%@-%@: %@", [ZBDevice deviceModelID], [[UIDevice currentDevice] systemVersion], [ZBDevice UDID]];
+    NSString *body = [NSString stringWithFormat:@"%@-%@: %@", [UIDevice currentDevice].zbra_machine, [UIDevice currentDevice].systemVersion, [UIDevice currentDevice].zbra_udid];
     if ([MFMailComposeViewController canSendMail]) {
         MFMailComposeViewController *mail = [[MFMailComposeViewController alloc] init];
         mail.mailComposeDelegate = self;

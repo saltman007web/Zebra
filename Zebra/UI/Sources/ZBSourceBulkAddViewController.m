@@ -8,9 +8,9 @@
 
 #import "ZBSourceBulkAddViewController.h"
 
-#import <Extensions/ZBColor.h>
-#import <UI/Sources/ZBSourceImportViewController.h>
-#import <Model/ZBDummySource.h>
+#import "Zebra-Swift.h"
+#import "ZBSourceImportViewController.h"
+#import "ZBDummySource.h"
 
 @interface ZBSourceBulkAddViewController ()
 @property UITextView *textView;
@@ -42,7 +42,7 @@
 - (void)loadView {
     [super loadView];
     
-    self.view.backgroundColor = [ZBColor systemGroupedBackgroundColor];
+    self.view.backgroundColor = [UIColor systemGroupedBackgroundColor];
     self.textViewBottomConstraint = [[_textView bottomAnchor] constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor constant:-10];
     
     [self.view addSubview:_textView];

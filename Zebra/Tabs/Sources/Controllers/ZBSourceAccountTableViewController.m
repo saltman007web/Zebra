@@ -6,18 +6,15 @@
 //  Copyright © 2019 Wilson Styres. All rights reserved.
 //
 
-#import "UIBarButtonItem+blocks.h"
 #import "ZBPackageTableViewCell.h"
-#import "ZBSourceTableViewCell.h"
+#import "Zebra-Swift.h"
 #import "ZBSourceAccountTableViewController.h"
 #import "ZBPackageViewController.h"
 #import "ZBUserInfo.h"
 
-#import <ZBDevice.h>
-#import <ZBAppDelegate.h>
-#import <Extensions/ZBColor.h>
-#import <Tabs/Packages/Helpers/ZBPackageActions.h>
-#import <UI/ZBTabBarController.h>
+#import "ZBAppDelegate.h"
+#import "ZBPackageActions.h"
+#import "ZBTabBarController.h"
 
 @import SDWebImage;
 
@@ -57,14 +54,12 @@
     self.navigationItem.title = NSLocalizedString(@"My Account", @"");
     
     if (self.presentingViewController) {
-        UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Done", @"") style:UIBarButtonItemStyleDone actionHandler:^{
-            [self dismissViewControllerAnimated:YES completion:nil];
-        }];
+        UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Done", @"") style:UIBarButtonItemStyleDone target:self action:@selector(done:)];
         self.navigationItem.rightBarButtonItem = doneButton;
     }
     
     [self.tableView registerNib:[UINib nibWithNibName:@"ZBPackageTableViewCell" bundle:nil] forCellReuseIdentifier:@"packageTableViewCell"];
-    [self.tableView registerNib:[UINib nibWithNibName:@"ZBSourceTableViewCell" bundle:nil] forCellReuseIdentifier:@"sourceTableViewCell"];
+    [self.tableView registerClass:[ZBSourceTableViewCell class] forCellReuseIdentifier:@"sourceTableViewCell"];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshTable) name:@"ZBDatabaseCompletedUpdate" object:nil];
     
 //    if (@available(iOS 13.0, *)) {
@@ -135,7 +130,11 @@
 }
 
 - (void)signOut:(id)sender {
-//    [keychain removeItemForKey:[source repositoryURI]];
+    //    [keychain removeItemForKey:[source repositoryURI]];
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)done:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -168,11 +167,11 @@
 //            case 0: {
 //                ZBSourceTableViewCell *cell = (ZBSourceTableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"sourceTableViewCell" forIndexPath:indexPath];
 //
-//                cell.sourceLabel.textColor = [ZBColor labelColor];
+//                cell.sourceLabel.textColor = [UIColor labelColor];
 //                cell.sourceLabel.text = [source label];
 //
 //                cell.urlLabel.text = [source sourceDescription];
-//                cell.urlLabel.textColor = [ZBColor secondaryLabelColor];
+//                cell.urlLabel.textColor = [UIColor secondaryLabelColor];
 //
 //                [cell.iconImageView sd_setImageWithURL:[source iconURL] placeholderImage:[UIImage imageNamed:@"Unknown"]];
 //
@@ -199,7 +198,7 @@
 //                UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"buttonCell"];
 //
 //                cell.textLabel.text = NSLocalizedString(@"Sign Out", @"");
-//                cell.textLabel.textColor = [ZBColor accentColor] ?: [UIColor systemBlueColor];
+//                cell.textLabel.textColor = [UIColor accentColor] ?: [UIColor systemBlueColor];
 //                cell.selectionStyle = UITableViewCellSelectionStyleDefault;
 //
 //                return cell;

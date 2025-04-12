@@ -11,9 +11,8 @@
 //#import "ZBOptionSettingsTableViewCell.h"
 #import "ZBSettingsTableViewCell.h"
 
-#import <ZBSettings.h>
-#import <Extensions/UIImageView+Zebra.h>
-#import <Extensions/ZBColor.h>
+#import "Zebra-Swift.h"
+#import "UIImageView+Zebra.h"
 
 @interface ZBAuthorSelectorTableViewController () {
     NSArray <NSArray <NSString *> *> *authors;
@@ -68,7 +67,7 @@
         searchController.delegate = self;
         searchController.searchResultsUpdater = self;
         searchController.searchBar.delegate = self;
-        searchController.searchBar.tintColor = [ZBColor accentColor];
+        searchController.searchBar.tintColor = [UIColor accentColor];
         searchController.searchBar.placeholder = NSLocalizedString(@"Search for an Author", @"");
         searchController.hidesNavigationBarDuringPresentation = NO;
     }

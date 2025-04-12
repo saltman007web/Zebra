@@ -8,8 +8,7 @@
 
 #import "ZBLanguageSettingsViewController.h"
 
-#import <ZBDevice.h>
-#import <ZBSettings.h>
+#import "Zebra-Swift.h"
 
 #import <SafariServices/SafariServices.h>
 
@@ -79,7 +78,7 @@
         @"text": @"Help translate Zebra!",
         @"type": @(ZBPreferencesCellTypeDisclosure),
         @"action": @"showCrowdIn",
-        @"icon": [UIImage imageNamed:@"Translations"]
+//        @"icon": [UIImage imageNamed:@"Translations"]
     }]];
     
     return specifiers;
@@ -149,7 +148,7 @@
                 [ZBSettings setSelectedLanguage:self->selectedLanguage];
             }
             [ZBSettings setUsesSystemLanguage:self->useSystemLanguage];
-            [ZBDevice relaunchZebra];
+            [ZBDeviceCommands relaunchZebra];
         }];
         [confirm addAction:confirmAction];
         

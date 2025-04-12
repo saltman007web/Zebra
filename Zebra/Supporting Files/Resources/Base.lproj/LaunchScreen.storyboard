@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="5ze-fy-CZc">
+    <device id="retina6_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!-- -->
+        <scene sceneID="x87-yg-Sol">
+            <objects>
+                <viewController title=" " id="5ze-fy-CZc" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Fmu-Xk-zUm">
+                        <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tabBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hJW-y7-CUY">
+                                <rect key="frame" x="0.0" y="843" width="428" height="49"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <items/>
+                            </tabBar>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Zr8-7G-shW"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="hJW-y7-CUY" firstAttribute="leading" secondItem="Zr8-7G-shW" secondAttribute="leading" id="MA4-MB-lN7"/>
+                            <constraint firstItem="hJW-y7-CUY" firstAttribute="trailing" secondItem="Zr8-7G-shW" secondAttribute="trailing" id="Pg3-ul-94f"/>
+                            <constraint firstItem="hJW-y7-CUY" firstAttribute="bottom" secondItem="Zr8-7G-shW" secondAttribute="bottom" id="U99-CV-P7n"/>
+                        </constraints>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="" id="nC3-Dz-hMW"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hhd-No-F0x" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="809" y="636"/>
+        </scene>
+    </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

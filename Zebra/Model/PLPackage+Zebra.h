@@ -7,14 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <Plains/Model/PLPackage.h>
+#import <Plains/Plains.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface PLPackage (Zebra)
-- (BOOL)mightRequirePayment;
-- (NSUInteger)possibleActions;
-- (NSUInteger)possibleExtraActions;
 - (void)setPackageIconForImageView:(UIImageView *)imageView;
 - (NSArray *)information;
 @end

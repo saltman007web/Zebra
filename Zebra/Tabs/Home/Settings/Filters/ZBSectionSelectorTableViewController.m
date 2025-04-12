@@ -8,9 +8,8 @@
 
 #import "ZBSectionSelectorTableViewController.h"
 
-#import <ZBSettings.h>
-#import <Extensions/UIImageView+Zebra.h>
-#import <Extensions/ZBColor.h>
+#import "Zebra-Swift.h"
+#import "UIImageView+Zebra.h"
 
 @interface ZBSectionSelectorTableViewController () {
     NSMutableArray *sections;

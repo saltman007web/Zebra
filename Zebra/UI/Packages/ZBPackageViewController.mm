@@ -7,21 +7,20 @@
 //
 
 #import "ZBPackageViewController.h"
-#import <Tabs/Packages/Helpers/ZBPackageActions.h>
-#import <Tabs/Packages/Helpers/ZBPackageInfoController.h>
+#import "ZBPackageActions.h"
+#import "ZBPackageInfoController.h"
 #import "ZBActionButton.h"
 #import "ZBBoldTableViewHeaderView.h"
 #import "ZBInfoTableViewCell.h"
 #import "ZBLinkTableViewCell.h"
-#import <Extensions/ZBColor.h>
-#import <Extensions/UINavigationBar+Extensions.h>
-#import <ZBDevice.h>
-#import "ZBPackageDepictionViewController.h"
+#import "Zebra-Swift.h"
+#import "UINavigationBar+Extensions.h"
 #import "UIViewController+Extensions.h"
-#import <UI/ZBSidebarController.h>
+#import "ZBSidebarController.h"
 
-#import <Model/PLPackage+Zebra.h>
-#import <Plains/Managers/PLPackageManager.h>
+#import "PLPackage+Zebra.h"
+#import <Plains/Plains.h>
+#import <WebKit/WebKit.h>
 
 #import <SDWebImage/SDWebImage.h>
 
@@ -118,7 +117,7 @@
     [super viewWillDisappear:animated];
     
     [self.navigationController.navigationBar _setBackgroundOpacity:1];
-    [self.navigationController.navigationBar setTintColor:[ZBColor accentColor]];
+    [self.navigationController.navigationBar setTintColor:[UIColor accentColor]];
 }
 
 - (void)dealloc {
@@ -140,7 +139,7 @@
     [self configureNavigationItems];
     
     // Tagline label tapping
-    if (self.package.hasTagline && (self.package.authorName || self.package.maintainerName)) { // Only enable the tap recognizer if there is a tagline
+    if (self.package.hasTagline && (self.package.author.name || self.package.maintainer.name)) { // Only enable the tap recognizer if there is a tagline
         UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showAuthorName)];
         self.tagLineLabel.userInteractionEnabled = YES;
         [self.tagLineLabel addGestureRecognizer:gestureRecognizer];
@@ -149,7 +148,7 @@
     // Package Icon
     self.iconImageView.layer.cornerRadius = 20;
     self.iconImageView.layer.borderWidth = 1;
-    self.iconImageView.layer.borderColor = [[ZBColor imageBorderColor] CGColor];
+    self.iconImageView.layer.borderColor = [[UIColor imageBorderColor] CGColor];
 
     // Buttons
     [self.moreButton setContentEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 0)]; // We don't want this button to have the default contentEdgeInsets inherited by a ZBActionButton
@@ -163,7 +162,7 @@
     [self.headerImageGradientView.layer insertSublayer:self.headerImageGradientLayer atIndex:0];
     
     // Information Table View
-    [self.informationTableView setBackgroundColor:[ZBColor systemBackgroundColor]];
+    [self.informationTableView setBackgroundColor:[UIColor systemBackgroundColor]];
     [self.informationTableView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:nil];
 }
 
@@ -186,7 +185,7 @@
     if (self.package.hasTagline) {
         self.tagLineLabel.text = self.package.shortDescription;
     } else {
-        self.tagLineLabel.text = self.package.authorName ?: self.package.maintainerName;
+        self.tagLineLabel.text = self.package.author.name ?: self.package.maintainer.name;
     }
     [self.package setPackageIconForImageView:self.iconImageView];
     self.packageInformation = [self.package information];
@@ -224,7 +223,7 @@
 
 - (void)showAuthorName {
     [UIView transitionWithView:self.tagLineLabel duration:0.25f options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
-        self.tagLineLabel.text = self.package.authorName ?: self.package.maintainerName;
+        self.tagLineLabel.text = self.package.author.name ?: self.package.maintainer.name;
     } completion:nil];
 }
 
@@ -288,7 +287,7 @@
     imageView.contentMode = UIViewContentModeScaleAspectFill;
     imageView.layer.cornerRadius = imageView.frame.size.height * 0.2237;
     imageView.layer.borderWidth = 1;
-    imageView.layer.borderColor = [[ZBColor imageBorderColor] CGColor];
+    imageView.layer.borderColor = [[UIColor imageBorderColor] CGColor];
     imageView.layer.masksToBounds = YES;
     imageView.alpha = 0.0;
     [self.package setPackageIconForImageView:imageView];
@@ -322,7 +321,7 @@
         CGFloat percentageVerticalOffset = currentVerticalOffset / maximumVerticalOffsetForOpacity;
         CGFloat opacity = MAX(0, MIN(1, percentageVerticalOffset));
 
-        UIColor *blendedColor = [ZBColor blendColor:[UIColor whiteColor] WithColor:[ZBColor accentColor] progress:opacity];
+        UIColor *blendedColor = [[UIColor whiteColor] blendedWith:[UIColor accentColor] amount:opacity];
 
         self.navigationController.navigationBar.tintColor = blendedColor;
 
@@ -439,7 +438,7 @@
     NSDictionary *packageInformation = self.packageInformation[indexPath.row];
     
     if ([packageInformation objectForKey:@"link"]) {
-        [ZBDevice openURL:packageInformation[@"link"] sender:self];
+        [ZBURLController openURL:packageInformation[@"link"] sender:self];
     }
     else if ([packageInformation objectForKey:@"class"]) {
         Class infoControllerClass = NSClassFromString(packageInformation[@"class"]);

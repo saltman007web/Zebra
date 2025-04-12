@@ -8,18 +8,16 @@
 
 #import "ZBSearchViewController.h"
 
-//#import <Managers/ZBPackageManager.h>
+//#import "ZBPackageManager.h"
 
-#import <UI/Common/Views/ZBBoldTableViewHeaderView.h>
-#import <UI/Packages/Views/Cells/ZBPackageTableViewCell.h>
+#import "ZBBoldTableViewHeaderView.h"
+#import "ZBPackageTableViewCell.h"
 
-#import <ZBSettings.h>
-#import <Extensions/ZBColor.h>
-#import <Tabs/Packages/Helpers/ZBPackageActions.h>
-#import <UI/Packages/ZBPackageViewController.h>
+#import "Zebra-Swift.h"
+#import "ZBPackageActions.h"
+#import "ZBPackageViewController.h"
 
-#import <Plains/Model/PLPackage.h>
-#import <Plains/Managers/PLPackageManager.h>
+#import <Plains/Plains.h>
 
 @interface ZBSearchViewController () {
     NSMutableArray *recentSearches;
@@ -52,7 +50,7 @@
         searchController.delegate = self;
         searchController.searchResultsUpdater = self;
         searchController.searchBar.delegate = self;
-        searchController.searchBar.tintColor = [ZBColor accentColor];
+        searchController.searchBar.tintColor = [UIColor accentColor];
         searchController.searchBar.placeholder = NSLocalizedString(@"Tweaks, Themes, and More", @"");
         searchController.searchBar.scopeButtonTitles = @[NSLocalizedString(@"Name", @""), NSLocalizedString(@"Description", @""), NSLocalizedString(@"Author", @"")];
         searchController.searchBar.autocapitalizationType = UITextAutocapitalizationTypeNone;
@@ -213,14 +211,14 @@
             [(ZBPackageTableViewCell *)cell setPackage:searchResults[indexPath.row]];
         } else {
             cell.textLabel.text = NSLocalizedString(@"No Results", @"");
-            cell.textLabel.textColor = [ZBColor secondaryLabelColor];
+            cell.textLabel.textColor = [UIColor secondaryLabelColor];
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.textLabel.font = [UIFont systemFontOfSize:15.0];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
     } else { // Show recent packages cell
         cell.textLabel.text = recentSearches[indexPath.row];
-        cell.textLabel.textColor = [ZBColor accentColor];
+        cell.textLabel.textColor = [UIColor accentColor];
     }
 }
 

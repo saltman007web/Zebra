@@ -7,27 +7,27 @@
 //
 
 #import "ZBSourceListViewController.h"
+#import <WebKit/WebKit.h>
 
-#import <UI/Sources/Views/Cells/ZBSourceTableViewCell.h>
-#import <UI/Sources/ZBSourceViewController.h>
-#import <UI/ZBSidebarController.h>
-#import <UI/Sources/ZBSourceAddViewController.h>
-#import <UI/Common/ZBErrorViewController.h>
-#import <Extensions/ZBColor.h>
+#import "ZBSourceViewController.h"
+#import "ZBSidebarController.h"
+#import "ZBSourceAddViewController.h"
+#import "ZBErrorViewController.h"
 
-#import <Plains/Managers/PLSourceManager.h>
-#import <Plains/Model/PLSource.h>
+#import <Plains/Plains.h>
+#import "Zebra-Swift.h"
 #import <SDWebImage/SDWebImage.h>
 
 @interface ZBSourceListViewController () {
     PLSourceManager *sourceManager;
-    NSArray *sources;
+    NSMutableArray *sources;
 }
 @property BOOL allowEditing;
 @property BOOL showNavigationButtons;
 @property BOOL allowRefresh;
 @property BOOL showFailureSection;
 @property BOOL allowSelection;
+@property BOOL ignoreNotifications;
 @property Class selectActionClass;
 @property NSMutableDictionary <NSString *, NSMutableArray *> *failures;
 @end
@@ -48,12 +48,13 @@
         _allowSelection = YES;
         _showNavigationButtons = YES;
         _showFailureSection = YES;
+        _ignoreNotifications = NO;
         _selectActionClass = [ZBSourceViewController class];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadSources) name:PLSourceListUpdatedNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setSourceDownloading:) name:PLStartedSourceDownloadNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(failedSourceDownload:) name:PLFailedSourceDownloadNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setSourceFinished:) name:PLFinishedSourceDownloadNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadSources) name:PLSourceManager.sourceListDidUpdateNotification object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setSourceDownloading:) name:PLStartedSourceDownloadNotification object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(failedSourceDownload:) name:PLFailedSourceDownloadNotification object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setSourceFinished:) name:PLFinishedSourceDownloadNotification object:nil];
     }
     
     return self;
@@ -63,7 +64,7 @@
     self = [super initWithStyle:UITableViewStylePlain];
     
     if (self) {
-        self->sources = sources;
+        self->sources = [sources mutableCopy];
     }
     
     return self;
@@ -80,7 +81,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-#if TARGET_OS_IOS
+#if !TARGET_OS_MACCATALYST
     if (self.allowRefresh) {
         self.refreshControl = [[UIRefreshControl alloc] init];
         [self.refreshControl addTarget:self action:@selector(refreshSources) forControlEvents:UIControlEventValueChanged];
@@ -94,7 +95,7 @@
     
     [self.tableView setTableHeaderView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 1)]];
     [self.tableView setTableFooterView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 1)]];
-    [self.tableView registerNib:[UINib nibWithNibName:@"ZBSourceTableViewCell" bundle:nil] forCellReuseIdentifier:@"sourceTableViewCell"];
+    [self.tableView registerClass:[ZBSourceTableViewCell class] forCellReuseIdentifier:@"sourceTableViewCell"];
     
     [self loadSources];
 }
@@ -117,28 +118,35 @@
 }
 
 - (void)reloadSources {
+    if (_ignoreNotifications)
+        return;
     self->sources = NULL;
     [self loadSources];
 }
 
 - (void)loadSources {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (!self.isViewLoaded) return;
-    
-        if (self->sources) {
-            [UIView transitionWithView:self.tableView duration:0.20f options:UIViewAnimationOptionTransitionCrossDissolve animations:^(void) {
-                [self.tableView reloadData];
-            } completion:nil];
-        } else { // Load sources for the first time, every other access is done by the filter and delegate methods
-            self->sources = [[self->sourceManager sources] sortedArrayUsingSelector:@selector(compareByOrigin:)];
+    if (![NSThread isMainThread]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
             [self loadSources];
-        }
-    });
+        });
+        return;
+    }
+        
+    if (!self.isViewLoaded) return;
+
+    if (self->sources) {
+        [UIView transitionWithView:self.tableView duration:0.20f options:UIViewAnimationOptionTransitionCrossDissolve animations:^(void) {
+            [self.tableView reloadData];
+        } completion:nil];
+    } else { // Load sources for the first time, every other access is done by the filter and delegate methods
+        self->sources = [[[self->sourceManager sources] sortedArrayUsingSelector:@selector(compareByOrigin:)] mutableCopy];
+        [self loadSources];
+    }
 }
 
 - (void)refreshSources {
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-        [self->sourceManager refreshSources];
+//        [self->sourceManager refreshSources];
 #if TARGET_OS_IOS
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.refreshControl endRefreshing];
@@ -215,9 +223,7 @@
         int hasIssues = [self hasIssues];
         cell.sourceLabel.text = hasIssues > 1 ? [NSString stringWithFormat:@"%d sources could not be refreshed.", hasIssues] : @"1 source could not be refreshed.";
         cell.urlLabel.text = @"Tap to learn more.";
-        if (@available(iOS 13.0, macCatalyst 13.0, *)) {
-            cell.iconImageView.image = [UIImage systemImageNamed:@"xmark.octagon.fill"];
-        }
+        cell.iconImageView.image = [UIImage systemImageNamed:@"xmark.octagon.fill"];
         cell.iconImageView.layer.borderColor = [UIColor clearColor].CGColor;
         cell.tintColor = [UIColor systemRedColor];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -314,10 +320,11 @@
     PLSource *source = sources[indexPath.row];
     if (self.allowEditing && [source canRemove]) {
         UIContextualAction *removeAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive title:@"Delete" handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
+            self.ignoreNotifications = YES;
             [self->sourceManager removeSource:source];
-            self->sources = NULL;
-            [self loadSources];
+            [self->sources removeObjectAtIndex:indexPath.row];
             [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+            self.ignoreNotifications = NO;
         }];
         return [UISwipeActionsConfiguration configurationWithActions:@[removeAction]];
     }

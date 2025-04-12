@@ -8,11 +8,10 @@
 
 #import "ZBPackageTableViewCell.h"
 
-#import <Model/PLPackage+Zebra.h>
-#import <Plains/Model/PLSource.h>
-
-#import <Extensions/ZBColor.h>
-#import <Tabs/Packages/Helpers/ZBPackageActions.h>
+#import "PLPackage+Zebra.h"
+#import <Plains/Plains.h>
+#import "Zebra-Swift.h"
+#import "ZBPackageActions.h"
 
 @interface ZBPackageTableViewCell ()
 @property (weak, nonatomic) IBOutlet UIView *backgroundContainerView;
@@ -33,7 +32,7 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     self.isInstalledImageView.hidden = YES;
-    self.isInstalledImageView.tintColor = [ZBColor accentColor];
+    self.isInstalledImageView.tintColor = [UIColor accentColor];
     
     self.isPaidImageView.hidden = YES;
     self.isFavoritedImageView.hidden = YES;
@@ -43,12 +42,12 @@
     self.selectionStyle = UITableViewCellSelectionStyleDefault;
     self.iconImageView.layer.cornerRadius = self.iconImageView.frame.size.height * 0.2237;
     self.iconImageView.layer.borderWidth = 1;
-    self.iconImageView.layer.borderColor = [[ZBColor imageBorderColor] CGColor];
+    self.iconImageView.layer.borderColor = [[UIColor imageBorderColor] CGColor];
     self.iconImageView.layer.masksToBounds = YES;
     
-    self.packageLabel.textColor = [ZBColor labelColor];
-    self.descriptionLabel.textColor = [ZBColor secondaryLabelColor];
-    self.infoLabel.textColor = [ZBColor tertiaryLabelColor];
+    self.packageLabel.textColor = [UIColor labelColor];
+    self.descriptionLabel.textColor = [UIColor secondaryLabelColor];
+    self.infoLabel.textColor = [UIColor tertiaryLabelColor];
 }
 
 - (void)setPackage:(PLPackage *)package {
@@ -58,8 +57,8 @@
     NSMutableArray *info = [NSMutableArray arrayWithCapacity:3];
     if (self.showVersion)
         [info addObject:package.version];
-    if (self.showAuthor && package.authorName)
-        [info addObject:package.authorName];
+    if (self.showAuthor && package.author.name)
+        [info addObject:package.author.name];
     if (self.showSize)
         [info addObject:package.installedSizeString];
     if (self.showSource && package.source.origin)
@@ -67,9 +66,9 @@
     
     self.infoLabel.text = [info componentsJoinedByString:@" • "];
     
-    self.isInstalledImageView.hidden = !package.installed;
+    self.isInstalledImageView.hidden = !package.isInstalled;
     self.isFavoritedImageView.hidden = YES;
-    self.isPaidImageView.hidden = !package.paid;
+    self.isPaidImageView.hidden = !package.isPaid;
     
     [package setPackageIconForImageView:self.iconImageView];
 }

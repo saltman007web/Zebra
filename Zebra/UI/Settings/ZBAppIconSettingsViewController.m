@@ -8,7 +8,7 @@
 
 #import "ZBAppIconSettingsViewController.h"
 
-#import <Extensions/UIImageView+Zebra.h>
+#import "UIImageView+Zebra.h"
 
 #if !TARGET_OS_MACCATALYST
 
@@ -28,11 +28,31 @@
 - (NSArray <NSArray <NSDictionary *> *> *)specifiers {
     return @[
         @[
-//            @{
-//                @"icon": [UIImage imageNamed:@"AppIcon60x60"],
-//                @"text": @"Classic",
-//                @"border": @YES
-//            },
+            @{
+                @"icon": [UIImage imageNamed:@"AppIcon"],
+                @"subtext": @"Alpha_Stream",
+                @"text": @"Zebra 2 (Light)",
+                @"border": @YES,
+                @"type": @(ZBPreferencesCellTypeSelection),
+                @"action": @"setAppIcon:"
+            },
+            @{
+                @"icon": [UIImage imageNamed:@"alphastream-dark"],
+                @"subtext": @"Alpha_Stream",
+                @"text": @"Zebra 2 (Dark)",
+                @"border": @NO,
+                @"type": @(ZBPreferencesCellTypeSelection),
+                @"action": @"setAppIcon:",
+                @"iconName": @"alphastream-dark"
+            },
+            @{
+                @"icon": [UIImage imageNamed:@"originalWhite"],
+                @"text": @"Classic (Light)",
+                @"border": @YES,
+                @"type": @(ZBPreferencesCellTypeSelection),
+                @"action": @"setAppIcon:",
+                @"iconName": @"originalLight"
+            },
             @{
                 @"icon": [UIImage imageNamed:@"originalBlack"],
                 @"text": @"Classic (Dark)",

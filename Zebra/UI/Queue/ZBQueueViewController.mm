@@ -8,16 +8,14 @@
 
 #import "ZBQueueViewController.h"
 
-#import <UI/Packages/Views/Cells/ZBPackageTableViewCell.h>
-#import <UI/Common/Views/ZBBoldTableViewHeaderView.h>
-#import <UI/Console/ZBConsoleViewController.h>
-#import <UI/ZBSidebarController.h>
+#import "ZBPackageTableViewCell.h"
+#import "ZBBoldTableViewHeaderView.h"
+#import "ZBConsoleViewController.h"
+#import "ZBSidebarController.h"
 
-#import <Extensions/ZBColor.h>
+#import "Zebra-Swift.h"
 
-#import <Plains/Model/PLPackage.h>
-#import <Plains/Managers/PLPackageManager.h>
-#import <Plains/Queue/PLQueue.h>
+#import <Plains/Plains.h>
 
 @interface ZBQueueViewController () {
     PLQueue *queue;
@@ -92,7 +90,7 @@
         UILabel *emptyLabel = [[UILabel alloc] init];
         emptyLabel.text = @"No Packages In Queue";
         emptyLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
-        emptyLabel.textColor = [ZBColor secondaryLabelColor];
+        emptyLabel.textColor = [UIColor secondaryLabelColor];
         
         self.tableView.backgroundView = emptyLabel;
         
@@ -126,7 +124,7 @@
     if (issues[package.identifier]) {
         cell.accessoryType = UITableViewCellAccessoryDetailButton;
         cell.tintColor = [UIColor systemRedColor];
-    } else if (package.essential && indexPath.section == PLQueueRemove) {
+    } else if (package.isEssential && indexPath.section == PLQueueRemove) {
         cell.accessoryType = UITableViewCellAccessoryDetailButton;
         cell.tintColor = [UIColor systemOrangeColor];
     } else {
@@ -152,7 +150,7 @@
                 
                 [cell addInfoAttributedText:string];
             }
-        } else if (indexPath.section == PLQueueRemove && package.essential) {
+        } else if (indexPath.section == PLQueueRemove && package.isEssential) {
             NSString *reason = @"This package is marked as essential and should NOT be removed unless you know what you are doing!";
             NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:reason];
             
@@ -172,7 +170,7 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     PLPackage *package = packages[indexPath.section][indexPath.row];
-    if (issues[package.identifier] || package.essential) {
+    if (issues[package.identifier] || package.isEssential) {
         if (![expandedCells containsIndex:indexPath.hash]) {
             [expandedCells addIndex:indexPath.hash];
         } else {
@@ -184,7 +182,7 @@
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
     PLPackage *package = packages[indexPath.section][indexPath.row];
-    if (issues[package.identifier] || package.essential) {
+    if (issues[package.identifier] || package.isEssential) {
         if (![expandedCells containsIndex:indexPath.hash]) {
             [expandedCells addIndex:indexPath.hash];
         } else {
@@ -250,7 +248,7 @@
     if (queue.hasEssentialPackages) {
         NSMutableArray *removedEssentials = [NSMutableArray new];
         for (PLPackage *package in packages[PLQueueRemove]) {
-            if (package.essential) [removedEssentials addObject:package.identifier];
+            if (package.isEssential) [removedEssentials addObject:package.identifier];
         }
         
         NSString *message = [NSString stringWithFormat:@"WARNING: You are about to do something potentially harmful.\nThe following essential packages will be removed:\n%@\nThis should NOT be done unless you know exactly what you are doing!\n", [removedEssentials componentsJoinedByString:@"\n"]];

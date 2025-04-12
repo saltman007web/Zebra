@@ -9,18 +9,18 @@
 #import "ZBPackageListViewController.h"
 #import "ZBPackageFilterViewController.h"
 
-#import <Model/ZBPackageFilter.h>
-#import <UI/Packages/ZBPackageViewController.h>
-#import <Tabs/Packages/Helpers/ZBPackageActions.h>
+#import "ZBPackageFilter.h"
+#import "ZBPackageViewController.h"
+#import "ZBPackageActions.h"
 #if TARGET_OS_MACCATALYST
-#import <UI/ZBSidebarController.h>
+#import "ZBSidebarController.h"
 #endif
-#import <UI/Common/Views/ZBBoldTableViewHeaderView.h>
-#import <UI/Common/ZBPartialPresentationController.h>
-#import <UI/Packages/Views/Cells/ZBPackageTableViewCell.h>
-#import <ZBSettings.h>
+#import "ZBBoldTableViewHeaderView.h"
+#import "ZBPartialPresentationController.h"
+#import "ZBPackageTableViewCell.h"
+#import "Zebra-Swift.h"
 
-#import <Extensions/UIViewController+Extensions.h>
+#import "UIViewController+Extensions.h"
 
 #import <Plains/Plains.h>
 
@@ -201,7 +201,7 @@
                 }
             } else {
                 [self->database fetchPackagesMatchingFilter:^BOOL(PLPackage * _Nonnull package) {
-                    return package.installed && package.role < 5;
+                    return package.isInstalled && package.role < PLPackageRoleCydia;
                 } completion:^(NSArray<PLPackage *> * _Nonnull packages) {
                     self.packages = packages;
                     self.updates = self->database.updates;
@@ -215,12 +215,7 @@
 - (void)showSpinner {
     dispatch_async(dispatch_get_main_queue(), ^{
         if (!self->spinner) {
-            if (@available(iOS 13.0, macCatalyst 13.0, *)) {
-                self->spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
-            } else {
-                self->spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-            }
-
+            self->spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
             self->spinner.hidesWhenStopped = YES;
             
             self.tableView.backgroundView = self->spinner;
